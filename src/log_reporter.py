@@ -72,11 +72,11 @@ def main(log_file,inactivity_period_file,output_file):
                     row_time = convert_str_to_timestamp(row_elements[1] + ' ' + row_elements[2])    
                     if row_time != curr_time: # then it is time to check expiration of session, and write the stats into file
                         curr_time = row_time
-                        for ip in session_dict:
+                        for ip in session_dict: # check if any expired session
                             if curr_time - session_dict[ip].last_time > inactivity_period:
                                 second_batch.append(session_dict[ip])
                                 expired_session.append(ip)
-                        for ip in expired_session:
+                        for ip in expired_session: # delete expired sessions
                             del session_dict[ip]
                         expired_session = []
                         
@@ -85,7 +85,7 @@ def main(log_file,inactivity_period_file,output_file):
                             second_batch.sort(key=lambda x: x.log_id) # sort the list by the row index before write
                             write(second_batch, output_file)
                             second_batch = []
-                            
+                    # when time has not changed, update session accordingly.        
                     if row_elements[0] not in session_dict:
                         session_dict[row_elements[0]] = Log_session(row_elements[0],row_time,row_time,1,i)
                     else:
@@ -97,10 +97,10 @@ def main(log_file,inactivity_period_file,output_file):
                         else:
                             old_session.last_time = row_time
                             old_session.count += 1                    
-
+    # put all non-processed sessions to a batch for writing
     for ip in session_dict:      
         second_batch.append(session_dict[ip])
-
+    # sorted the list by log index
     if len(second_batch) > 0:
         second_batch.sort(key=lambda x: x.log_id)
     write(second_batch, output_file) 
