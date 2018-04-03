@@ -103,7 +103,7 @@ def main(log_file,inactivity_period_file,output_file):
 
     if len(second_batch) > 0:
         second_batch.sort(key=lambda x: x.log_id)
-        write(second_batch, output_file) 
+    write(second_batch, output_file) 
 
 if __name__ == '__main__':
     if len(sys.argv) < 4 or (not os.path.isfile(sys.argv[1])) or (not os.path.isfile(sys.argv[2])):
